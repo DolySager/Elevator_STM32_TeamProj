@@ -57,6 +57,42 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define photoint_1f_Pin GPIO_PIN_0
+#define photoint_1f_GPIO_Port GPIOC
+#define photoint_2f_Pin GPIO_PIN_1
+#define photoint_2f_GPIO_Port GPIOC
+#define button_3f_Pin GPIO_PIN_0
+#define button_3f_GPIO_Port GPIOA
+#define button_2f_Pin GPIO_PIN_1
+#define button_2f_GPIO_Port GPIOA
+#define button_1f_Pin GPIO_PIN_4
+#define button_1f_GPIO_Port GPIOA
+#define fnd_segA_Pin GPIO_PIN_5
+#define fnd_segA_GPIO_Port GPIOA
+#define fnd_segB_Pin GPIO_PIN_6
+#define fnd_segB_GPIO_Port GPIOA
+#define fnd_segC_Pin GPIO_PIN_7
+#define fnd_segC_GPIO_Port GPIOA
+#define stepmotor_in1_Pin GPIO_PIN_5
+#define stepmotor_in1_GPIO_Port GPIOC
+#define photoint_3f_Pin GPIO_PIN_0
+#define photoint_3f_GPIO_Port GPIOB
+#define fnd_segDP_Pin GPIO_PIN_10
+#define fnd_segDP_GPIO_Port GPIOB
+#define stepmotor_in2_Pin GPIO_PIN_6
+#define stepmotor_in2_GPIO_Port GPIOC
+#define fnd_segE_Pin GPIO_PIN_7
+#define fnd_segE_GPIO_Port GPIOC
+#define stepmotor_in3_Pin GPIO_PIN_8
+#define stepmotor_in3_GPIO_Port GPIOC
+#define stepmotor_in4_Pin GPIO_PIN_9
+#define stepmotor_in4_GPIO_Port GPIOC
+#define fnd_segG_Pin GPIO_PIN_8
+#define fnd_segG_GPIO_Port GPIOA
+#define fnd_segF_Pin GPIO_PIN_9
+#define fnd_segF_GPIO_Port GPIOA
+#define fnd_segD_Pin GPIO_PIN_6
+#define fnd_segD_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 
