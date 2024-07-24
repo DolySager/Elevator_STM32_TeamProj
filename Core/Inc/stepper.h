@@ -1,7 +1,6 @@
 #ifndef INC_STEPPER_H_
 #define INC_STEPPER_H_
 
-#include "stm32f4xx_hal.h"
 #include "delay.h"
 #include "hw.h"
 

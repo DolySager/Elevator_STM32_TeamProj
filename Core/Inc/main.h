@@ -57,28 +57,34 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define photoint_1f_Pin GPIO_PIN_0
-#define photoint_1f_GPIO_Port GPIOC
-#define photoint_2f_Pin GPIO_PIN_1
-#define photoint_2f_GPIO_Port GPIOC
-#define button_3f_Pin GPIO_PIN_0
-#define button_3f_GPIO_Port GPIOA
-#define button_2f_Pin GPIO_PIN_1
-#define button_2f_GPIO_Port GPIOA
-#define button_1f_Pin GPIO_PIN_4
-#define button_1f_GPIO_Port GPIOA
 #define fnd_segA_Pin GPIO_PIN_5
 #define fnd_segA_GPIO_Port GPIOA
 #define fnd_segB_Pin GPIO_PIN_6
 #define fnd_segB_GPIO_Port GPIOA
 #define fnd_segC_Pin GPIO_PIN_7
 #define fnd_segC_GPIO_Port GPIOA
+#define photoint_1f_Pin GPIO_PIN_4
+#define photoint_1f_GPIO_Port GPIOC
+#define photoint_1f_EXTI_IRQn EXTI4_IRQn
 #define stepmotor_in1_Pin GPIO_PIN_5
 #define stepmotor_in1_GPIO_Port GPIOC
-#define photoint_3f_Pin GPIO_PIN_0
-#define photoint_3f_GPIO_Port GPIOB
+#define button_2f_Pin GPIO_PIN_1
+#define button_2f_GPIO_Port GPIOB
+#define button_2f_EXTI_IRQn EXTI1_IRQn
+#define button_3f_Pin GPIO_PIN_2
+#define button_3f_GPIO_Port GPIOB
+#define button_3f_EXTI_IRQn EXTI2_IRQn
 #define fnd_segDP_Pin GPIO_PIN_10
 #define fnd_segDP_GPIO_Port GPIOB
+#define photoint_2f_Pin GPIO_PIN_13
+#define photoint_2f_GPIO_Port GPIOB
+#define photoint_2f_EXTI_IRQn EXTI15_10_IRQn
+#define photoint_3f_Pin GPIO_PIN_14
+#define photoint_3f_GPIO_Port GPIOB
+#define photoint_3f_EXTI_IRQn EXTI15_10_IRQn
+#define button_1f_Pin GPIO_PIN_15
+#define button_1f_GPIO_Port GPIOB
+#define button_1f_EXTI_IRQn EXTI15_10_IRQn
 #define stepmotor_in2_Pin GPIO_PIN_6
 #define stepmotor_in2_GPIO_Port GPIOC
 #define fnd_segE_Pin GPIO_PIN_7
