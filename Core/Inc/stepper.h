@@ -5,6 +5,8 @@
 #include "delay.h"
 #include "hw.h"
 
+
+
 #define STEPS_PER_REVOLATION	4096
 #define DIR_CW					1		// 시계방향
 #define DIR_CCW					0		// 반시계방향

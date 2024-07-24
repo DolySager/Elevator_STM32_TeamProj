@@ -1,7 +1,7 @@
 #include "stepper.h"
 
-uint8_t is_motor_working = 0;
-uint8_t direction = 0;	// 0: CW, 1: CCW
+
+
 
 bool stepperInit()
 {
