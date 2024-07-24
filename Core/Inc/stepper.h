@@ -6,8 +6,8 @@
 #include "hw.h"
 
 #define STEPS_PER_REVOLATION	4096
-#define DIR_CW					'a'		// 시계방향
-#define DIR_CCW					'b'		// 반시계방향
+#define DIR_CW					1		// 시계방향
+#define DIR_CCW					0		// 반시계방향
 
 
 
@@ -39,8 +39,6 @@ static const uint8_t HALF_STEP_SEQ[8][4]=
 };
 
 void stepMotor(uint8_t step);
-void rotateSteps(uint16_t steps, uint8_t direction);
-void rotateDegrees(uint16_t steps, uint8_t direction);
 
 
 #endif /* INC_STEPPER_H_ */
