@@ -1,5 +1,5 @@
 #include "uart.h"
-
+#include "stdlib.h"
 
 
 // 버퍼 크기와 각도 값의 범위 설정

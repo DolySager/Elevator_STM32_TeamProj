@@ -9,7 +9,7 @@ static const uint8_t FND_Number[10] = {
     0x66, // 4
     0x6D, // 5
     0x7D, // 6
-    0x07, // 7
+    0x27, // 7
     0x7F, // 8
     0x6F  // 9
 };

@@ -3,7 +3,9 @@
 #define HW_HW_H_
 
 #include "hw_def.h"
-
+#include "fnd.h"
+#include "button.h"
+#include "photoint.h"
 
 #include "stepper.h"
 
