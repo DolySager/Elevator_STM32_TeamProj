@@ -61,6 +61,7 @@ void apMain()
 
 	direction = DIR_CCW;  // 하강시
 	is_motor_working = 1; // 시작시
+
 	// 포토 인터럽트 검출 시
 	if(HAL_GPIO_ReadPin(photoint_1f_GPIO_Port, photoint_1f_Pin)|| HAL_GPIO_ReadPin(photoint_2f_GPIO_Port, photoint_2f_Pin) || HAL_GPIO_ReadPin(photoint_3f_GPIO_Port, photoint_3f_Pin))
 		{
