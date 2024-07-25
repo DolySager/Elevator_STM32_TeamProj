@@ -7,6 +7,10 @@ uint8_t is_motor_working = 0;
 uint8_t direction = 0;	// 0: CW, 1: CCW
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
+
+
+
+
 	static uint16_t i;
 	if (is_motor_working)
 	{
@@ -58,19 +62,13 @@ extern uint8_t rxData;
 void apMain()
 {
 
-
-	direction = DIR_CCW;  // 하강시
-	is_motor_working = 1; // 시작시
-
-	// 포토 인터럽트 검출 시
-	if(HAL_GPIO_ReadPin(photoint_1f_GPIO_Port, photoint_1f_Pin)|| HAL_GPIO_ReadPin(photoint_2f_GPIO_Port, photoint_2f_Pin) || HAL_GPIO_ReadPin(photoint_3f_GPIO_Port, photoint_3f_Pin))
-		{
-			is_motor_working = 0;		// 모터 정지
-			updateCurrentFloor();			// 현재 층수 파악 후 case문 1 or 2 or 3  시작
-		}
+	is_motor_working = 1;
+	direction = DIR_CCW;
 
 
 	HAL_TIM_Base_Start_IT(&htim10);
+
+
 
   while(1)
   {
