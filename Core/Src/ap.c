@@ -38,41 +38,35 @@ void apInit()
 
 extern uint8_t rxData;
 
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-{
-	if(GPIO_Pin == button_2f_Pin)
-	{
-		direction = DIR_CCW;
-		is_motor_working = 1;
-	}
-	else if(GPIO_Pin == button_1f_Pin)
-	{
-		direction = DIR_CW;
-		is_motor_working = 1;
-	}
-	else if(GPIO_Pin == photoint_1f_Pin || GPIO_Pin == photoint_2f_Pin || GPIO_Pin == photoint_3f_Pin )
-	{
-		is_motor_working = 0;
-	}
-}
+//void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+//{
+//	if(GPIO_Pin == button_2f_Pin)
+//	{
+//		direction = DIR_CCW;
+//		is_motor_working = 1;
+//	}
+//	else if(GPIO_Pin == button_1f_Pin)
+//	{
+//		direction = DIR_CW;
+//		is_motor_working = 1;
+//	}
+//	else if(GPIO_Pin == photoint_1f_Pin || GPIO_Pin == photoint_2f_Pin || GPIO_Pin == photoint_3f_Pin )
+//	{
+//		is_motor_working = 0;
+//	}
+//}
 void apMain()
 {
 
 
 	direction = DIR_CCW;  // 하강시
 	is_motor_working = 1; // 시작시
-
 	// 포토 인터럽트 검출 시
-	if(GPIO_Pin == photoint_1f_Pin || GPIO_Pin == photoint_2f_Pin || GPIO_Pin == photoint_3f_Pin)
+	if(HAL_GPIO_ReadPin(photoint_1f_GPIO_Port, photoint_1f_Pin)|| HAL_GPIO_ReadPin(photoint_2f_GPIO_Port, photoint_2f_Pin) || HAL_GPIO_ReadPin(photoint_3f_GPIO_Port, photoint_3f_Pin))
 		{
 			is_motor_working = 0;		// 모터 정지
 			updateCurrentFloor();			// 현재 층수 파악 후 case문 1 or 2 or 3  시작
 		}
-
-
-
-  while(1)
-  {
 
 
 	HAL_TIM_Base_Start_IT(&htim10);
