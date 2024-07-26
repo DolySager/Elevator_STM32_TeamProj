@@ -91,7 +91,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	else if (GPIO_Pin == button_3f_Pin) queued_floor |= FLOOR_3F;
 
 	// 포토인터럽트 처리
-	else if (GPIO_Pin == photoint_1f_Pin)
+	else if (HAL_GPIO_ReadPin(photoint_1f_GPIO_Port, photoint_1f_Pin))
 	{
 		current_floor = FLOOR_1F;
 		if (queued_floor & FLOOR_1F)
@@ -101,7 +101,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 		    Play_Buzzer_Sound(currentfloor);
 		}
 	} 
-	else if (GPIO_Pin == photoint_2f_Pin)
+	else if (HAL_GPIO_ReadPin(photoint_2f_GPIO_Port, photoint_2f_Pin))
 	{
 		current_floor = FLOOR_2F;
 		if (queued_floor & FLOOR_2F)
@@ -111,7 +111,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 			Play_Buzzer_Sound(currentfloor);
 		}
 	} 
-	else if (GPIO_Pin == photoint_3f_Pin)
+	else if (HAL_GPIO_ReadPin(photoint_3f_GPIO_Port, photoint_3f_Pin))
 	{
 		current_floor = FLOOR_3F;
 		if (queued_floor & FLOOR_3F)
@@ -132,12 +132,12 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	if (direction == DIR_CW)		// going up
 	{
 		int8_t temp_floor_up = (queued_floor / current_floor);
-		if (!temp_floor_up) direction = DIR_CCW;
+		if (temp_floor_up <= 1) direction = DIR_CCW;
 	}
 	else //(direction == DIR_CCW)	going down
 	{
 		uint8_t temp_floor_down = (queued_floor % current_floor);
-		if (!temp_floor_down) direction = DIR_CW;
+		if (temp_floor_down == 0) direction = DIR_CW;
 	}
 
 }

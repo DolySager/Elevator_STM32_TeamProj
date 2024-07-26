@@ -35,19 +35,23 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	}
 
 	// 엘레베이터 문 열림 조절
-	static uint32_t door_open_time_index = 0;
-	if (is_door_open)
+	if (htim == &htim10)
 	{
-		door_open_time_index += 1;
-		if (door_open_time_index >=DOOR_OPEN_TIME_MS)
+		static uint32_t door_open_time_index = 0;
+		if (is_door_open)
 		{
-			is_door_open = 0;
+			door_open_time_index += 1;
+			if (door_open_time_index >=DOOR_OPEN_TIME_MS)
+			{
+				is_door_open = 0;
+			}
+		}
+		else
+		{
+			door_open_time_index = 0;
 		}
 	}
-	else
-	{
-		door_open_time_index = 0;
-	}
+
 
 
 }
