@@ -3,7 +3,7 @@
 
 #include "stm32f4xx_hal.h"
 
-void Buzzer_Init(TIM_HandleTypeDef *htim);
+void Buzzer_Init(TIM_HandleTypeDef *htim, uint32_t channel);
 void Buzzer_SetFrequency(uint32_t frequency);
 void Buzzer_Start(void);
 void Buzzer_Stop(void);

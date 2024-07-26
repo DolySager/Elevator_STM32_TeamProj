@@ -11,7 +11,6 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	Buzzer_Update();
 
-
 	static uint16_t i;
 	if (is_motor_working)
 	{
@@ -62,14 +61,13 @@ extern uint8_t rxData;
 //}
 void apMain()
 {
-	Buzzer_Init(&htim11);
+	Buzzer_Init(&htim11, TIM_CHANNEL_1);
 
 	is_motor_working = 1;
 	direction = DIR_CCW;
 
 
 	HAL_TIM_Base_Start_IT(&htim10);
-
 
 
   while(1)

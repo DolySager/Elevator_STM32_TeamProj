@@ -1,12 +1,13 @@
 #include "buzzer.h"
 
 static TIM_HandleTypeDef *buzzer_htim;
-static uint32_t buzzer_channel =0;
+static uint32_t buzzer_channel;
 static uint32_t buzzer_end_time = 0;
 
-void Buzzer_Init(TIM_HandleTypeDef *htim)
+void Buzzer_Init(TIM_HandleTypeDef *htim, uint32_t channel)
 {
 	buzzer_htim = htim;
+	buzzer_channel = channel;
 }
 
 void Buzzer_SetFrequency(uint32_t frequency)
