@@ -2,17 +2,10 @@
 #include "stepper.h"
 
 
-int currentfloor = 0;
+uint8_t currentfloor = 0;
 
 extern uint8_t is_motor_working;
 extern uint8_t direction;	// DIR_CW(high), DIR_CCW (low)
-
-
-uint8_t check_1f;
-uint8_t check_2f;
-uint8_t check_3f;
-
-
 
 void updateCurrentFloor() {
     if (HAL_GPIO_ReadPin(photoint_1f_GPIO_Port, photoint_1f_Pin)) {
@@ -26,15 +19,19 @@ void updateCurrentFloor() {
     Play_Buzzer_Sound(currentfloor);
 }
 
+/*
+// 버전1: 작동 확인된 코드
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
+	static uint8_t check_1f;
+	static uint8_t check_2f;
+	static uint8_t check_3f;
 
 	updateCurrentFloor();
 
 	if (GPIO_Pin == button_1f_Pin) check_1f = 1;
 	if (GPIO_Pin == button_2f_Pin) check_2f = 1;
 	if (GPIO_Pin == button_3f_Pin) check_3f = 1;
-
 
 	if (currentfloor == 1) check_1f = 0;
 	if (currentfloor == 2) check_2f = 0;
@@ -64,8 +61,85 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 		break;
 	}
 }
+*/
+
+#define FLOOR_1F 0b1
+#define FLOOR_2F 0b10
+#define FLOOR_3F 0b100
+#define FLOOR_4F 0b1000
+#define FLOOR_5F 0b10000
+#define FLOOR_6F 0b100000
+
+uint8_t is_door_open = 0;	// 0: door closed, 1: door opened
+
+// 버전 2: 외부 인터럽트 핀별 작동 분리 및 층 레지스터 일반화 코드 
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+	// 각 비트가 층을 상징하는 변수 (예: 1층 = 0번 비트)
+	static uint8_t queued_floor = 0;		// 목적지 층 대기열
+	static uint8_t current_floor = 0;		// 현재 엘레베이터 위치
+
+	////////////////////////////////
+	// 외부 인터럽트 핀별 각개 처리 //
+	////////////////////////////////
+
+	// 버튼 처리
+	if (GPIO_Pin == button_1f_Pin) queued_floor |= FLOOR_1F;
+	else if (GPIO_Pin == button_2f_Pin) queued_floor |= FLOOR_2F;
+	else if (GPIO_Pin == button_3f_Pin) queued_floor |= FLOOR_3F;
+
+	// 포토인터럽트 처리
+	else if (GPIO_Pin == photoint_1f_Pin)
+	{
+		current_floor = FLOOR_1F;
+		if (queued_floor & FLOOR_1F)
+		{
+			queued_floor &= ~FLOOR_1F;
+			is_door_open = 1;
+		}
+	} 
+	else if (GPIO_Pin == photoint_2f_Pin)
+	{
+		current_floor = FLOOR_2F;
+		if (queued_floor & FLOOR_2F)
+		{
+			queued_floor &= ~FLOOR_2F;
+			is_door_open = 1;
+		}
+	} 
+	else if (GPIO_Pin == photoint_3f_Pin)
+	{
+		current_floor = FLOOR_3F;
+		if (queued_floor & FLOOR_3F)
+		{
+			queued_floor &= ~FLOOR_3F;
+			is_door_open = 1;
+		}
+	} 
+
+	// motor working?
+	if (queued_floor && !is_door_open)
+		is_motor_working = 1;
+	else // (!queued_floor || is_door_open)
+		is_motor_working = 0;
+
+	// motor direction
+	if (direction == DIR_CW)		// going up
+	{
+		uint8_t temp_floor_up = (queued_floor - current_floor + 1);
+		if (temp_floor_up) direction = DIR_CCW;
+	}
+	else //(direction == DIR_CCW)	going down
+	{
+		uint8_t temp_floor_down = (queued_floor % current_floor);
+		if (temp_floor_down) direction = DIR_CW;
+	}
+}
 
 /*
+// great effor of works of Mr. Q
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
 	switch (currentfloor)
 	{
 	case 1:
@@ -257,7 +331,5 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	{
 		check_3f = 1;
 	}
-
-}*/
-
-
+}
+*/
