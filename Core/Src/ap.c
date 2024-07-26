@@ -81,8 +81,12 @@ void apMain()
 {
 	Buzzer_Init(&htim11, TIM_CHANNEL_1);
 
-	is_motor_working = 1;
-	direction = DIR_CCW;
+	if (!(HAL_GPIO_ReadPin(photoint_1f_GPIO_Port, photoint_1f_Pin) || HAL_GPIO_ReadPin(photoint_2f_GPIO_Port, photoint_2f_Pin) || HAL_GPIO_ReadPin(photoint_3f_GPIO_Port, photoint_3f_Pin)))
+	{
+		is_motor_working = 1;
+		direction = DIR_CCW;
+	}
+
 
 
 	HAL_TIM_Base_Start_IT(&htim10);

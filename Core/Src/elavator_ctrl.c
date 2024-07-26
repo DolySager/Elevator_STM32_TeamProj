@@ -16,7 +16,6 @@ void updateCurrentFloor() {
         currentfloor = 3; // 현재 3층
     }
     FND_DisplayNumber(currentfloor);
-    Play_Buzzer_Sound(currentfloor);
 }
 
 /*
@@ -63,6 +62,8 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 }
 */
 
+#define FLOOR_MAX FLOOR_3F
+
 #define FLOOR_1F 0b1
 #define FLOOR_2F 0b10
 #define FLOOR_3F 0b100
@@ -75,6 +76,7 @@ uint8_t is_door_open = 0;	// 0: door closed, 1: door opened
 // 버전 2: 외부 인터럽트 핀별 작동 분리 및 층 레지스터 일반화 코드 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
+	updateCurrentFloor();
 	// 각 비트가 층을 상징하는 변수 (예: 1층 = 0번 비트)
 	static uint8_t queued_floor = 0;		// 목적지 층 대기열
 	static uint8_t current_floor = 0;		// 현재 엘레베이터 위치
@@ -96,6 +98,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 		{
 			queued_floor &= ~FLOOR_1F;
 			is_door_open = 1;
+		    Play_Buzzer_Sound(currentfloor);
 		}
 	} 
 	else if (GPIO_Pin == photoint_2f_Pin)
@@ -105,6 +108,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 		{
 			queued_floor &= ~FLOOR_2F;
 			is_door_open = 1;
+			Play_Buzzer_Sound(currentfloor);
 		}
 	} 
 	else if (GPIO_Pin == photoint_3f_Pin)
@@ -114,6 +118,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 		{
 			queued_floor &= ~FLOOR_3F;
 			is_door_open = 1;
+			Play_Buzzer_Sound(currentfloor);
 		}
 	} 
 
@@ -126,14 +131,15 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	// motor direction
 	if (direction == DIR_CW)		// going up
 	{
-		uint8_t temp_floor_up = (queued_floor - current_floor + 1);
-		if (temp_floor_up) direction = DIR_CCW;
+		int8_t temp_floor_up = (queued_floor / current_floor);
+		if (!temp_floor_up) direction = DIR_CCW;
 	}
 	else //(direction == DIR_CCW)	going down
 	{
 		uint8_t temp_floor_down = (queued_floor % current_floor);
-		if (temp_floor_down) direction = DIR_CW;
+		if (!temp_floor_down) direction = DIR_CW;
 	}
+
 }
 
 /*
