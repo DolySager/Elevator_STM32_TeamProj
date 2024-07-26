@@ -14,10 +14,6 @@ uint8_t check_3f;
 
 
 
-
-
-
-
 void updateCurrentFloor() {
     if (HAL_GPIO_ReadPin(photoint_1f_GPIO_Port, photoint_1f_Pin)) {
         currentfloor = 1; // 현재 1층
@@ -27,6 +23,7 @@ void updateCurrentFloor() {
         currentfloor = 3; // 현재 3층
     }
     FND_DisplayNumber(currentfloor);
+    Play_Buzzer_Sound(currentfloor);
 }
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)

@@ -5,10 +5,11 @@
 
 uint8_t is_motor_working = 0;
 uint8_t direction = 0;	// 0: CW, 1: CCW
+
+
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-
-
+	Buzzer_Update();
 
 
 	static uint16_t i;
@@ -61,6 +62,7 @@ extern uint8_t rxData;
 //}
 void apMain()
 {
+	Buzzer_Init(&htim11);
 
 	is_motor_working = 1;
 	direction = DIR_CCW;

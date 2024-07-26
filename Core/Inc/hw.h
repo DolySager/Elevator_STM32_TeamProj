@@ -9,6 +9,8 @@
 #include "usart.h"
 #include "uart.h"
 
+#include "buzzer.h"
+
 #include "fnd.h"
 #include "button.h"
 #include "photoint.h"
