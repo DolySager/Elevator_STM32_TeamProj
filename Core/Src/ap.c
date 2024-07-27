@@ -7,32 +7,56 @@
 uint8_t is_motor_working = 0;
 uint8_t direction = 0;	// 0: CW, 1: CCW
 extern uint8_t is_door_open;
-
+uint8_t is_stop = 0;
 // 1ms 마다 호출
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	Buzzer_Update();
 
 	static uint16_t i;
+	static uint32_t stop_time_counter = 0;
+
+
 	if (is_motor_working)
 	{
-			// 회전 방향에 맞춰서 스텝 패턴 설정
-			uint8_t step;
-			if(direction == DIR_CW)
+		if(is_stop)
+		{
+			if(htim == &htim10)
 			{
-				step = 7 - (i % 8);		// 시계
+				stop_time_counter++;
+				if(stop_time_counter >= 500)
+				{
+					is_motor_working = 0;
+					is_stop = 0;
+					stop_time_counter = 0;
+					i = 0;
+				}
 			}
-			else
-			{
-				step = i % 8;			// 반시계
-			}
-			stepMotor(step);
-			i++;
-	}
+
+		}
 	else
 	{
+		uint8_t step;
+		if(direction == DIR_CW)
+		{
+			step = 7 - (i % 8);
+		}
+		else
+		{
+			step = i % 8;
+		}
+		stepMotor(step);
+		i++;
+	}
+	}
+
+	else if(is_stop)
+	{
+		is_stop = 0;
+		stop_time_counter = 0;
 		i = 0;
 	}
+
 
 	// 엘레베이터 문 열림 조절
 	if (htim == &htim10)

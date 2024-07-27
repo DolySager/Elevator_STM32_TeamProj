@@ -72,7 +72,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 #define FLOOR_6F 0b100000
 
 uint8_t is_door_open = 0;	// 0: door closed, 1: door opened
-
+extern uint8_t is_stop;
 // 버전 2: 외부 인터럽트 핀별 작동 분리 및 층 레지스터 일반화 코드 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
@@ -105,9 +105,17 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 
 	// motor working?
 	if (queued_floor && !is_door_open)
+	{
 		is_motor_working = 1;
+		is_stop = 0;
+	}
+
 	else // (!queued_floor || is_door_open)
+	{
 		is_motor_working = 0;
+		is_stop = 1;
+	}
+
 
 	// motor direction
 	int8_t temp_floor;
