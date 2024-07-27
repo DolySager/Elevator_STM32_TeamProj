@@ -50,13 +50,6 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	}
 	}
 
-	else if(is_stop)
-	{
-		is_stop = 0;
-		stop_time_counter = 0;
-		i = 0;
-	}
-
 
 	// 엘레베이터 문 열림 조절
 	if (htim == &htim10)
@@ -75,8 +68,6 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 			door_open_time_index = 0;
 		}
 	}
-
-
 
 }
 
