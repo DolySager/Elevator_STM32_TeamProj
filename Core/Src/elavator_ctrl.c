@@ -91,36 +91,17 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	else if (GPIO_Pin == button_3f_Pin) queued_floor |= FLOOR_3F;
 
 	// 포토인터럽트 처리
-	else if (HAL_GPIO_ReadPin(photoint_1f_GPIO_Port, photoint_1f_Pin))
+	else if (HAL_GPIO_ReadPin(photoint_1f_GPIO_Port, photoint_1f_Pin)) current_floor = FLOOR_1F;
+	else if (HAL_GPIO_ReadPin(photoint_2f_GPIO_Port, photoint_2f_Pin)) current_floor = FLOOR_2F;
+	else if (HAL_GPIO_ReadPin(photoint_3f_GPIO_Port, photoint_3f_Pin)) current_floor = FLOOR_3F;
+
+	// 만약 현재층이 대기열에 있다면...
+	if (queued_floor & current_floor)
 	{
-		current_floor = FLOOR_1F;
-		if (queued_floor & FLOOR_1F)
-		{
-			queued_floor &= ~FLOOR_1F;
-			is_door_open = 1;
-		    Play_Buzzer_Sound(currentfloor);
-		}
-	} 
-	else if (HAL_GPIO_ReadPin(photoint_2f_GPIO_Port, photoint_2f_Pin))
-	{
-		current_floor = FLOOR_2F;
-		if (queued_floor & FLOOR_2F)
-		{
-			queued_floor &= ~FLOOR_2F;
-			is_door_open = 1;
-			Play_Buzzer_Sound(currentfloor);
-		}
-	} 
-	else if (HAL_GPIO_ReadPin(photoint_3f_GPIO_Port, photoint_3f_Pin))
-	{
-		current_floor = FLOOR_3F;
-		if (queued_floor & FLOOR_3F)
-		{
-			queued_floor &= ~FLOOR_3F;
-			is_door_open = 1;
-			Play_Buzzer_Sound(currentfloor);
-		}
-	} 
+		queued_floor &= ~current_floor;
+		is_door_open = 1;
+		Play_Buzzer_Sound(currentfloor);
+	}
 
 	// motor working?
 	if (queued_floor && !is_door_open)
@@ -129,17 +110,11 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 		is_motor_working = 0;
 
 	// motor direction
-	if (direction == DIR_CW)		// going up
-	{
-		int8_t temp_floor_up = (queued_floor / current_floor);
-		if (temp_floor_up <= 1) direction = DIR_CCW;
-	}
-	else //(direction == DIR_CCW)	going down
-	{
-		uint8_t temp_floor_down = (queued_floor % current_floor);
-		if (temp_floor_down == 0) direction = DIR_CW;
-	}
-
+	int8_t temp_floor;
+	if (direction == DIR_CW) temp_floor = (queued_floor / current_floor);	// possibility that result may be 1 if queued_floor equals current floor,  but the possibility is removed above when queued_floor &= ~current_floor
+	else temp_floor = (queued_floor % current_floor);
+	// if there is nothing above/below current floor, switch direction
+	if (temp_floor == 0) direction = !direction;
 }
 
 /*
