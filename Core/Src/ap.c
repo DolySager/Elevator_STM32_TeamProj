@@ -17,24 +17,27 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	static uint32_t stop_time_counter = 0;
 
 
-	if (is_motor_working)
-	{
-		if(is_stop)
-		{
-			if(htim == &htim10)
-			{
-				stop_time_counter++;
-				if(stop_time_counter >= 500)
-				{
-					is_motor_working = 0;
-					is_stop = 0;
-					stop_time_counter = 0;
-					i = 0;
-				}
-			}
 
+	if(is_stop)
+	{
+		if(htim == &htim10)
+		{
+			stop_time_counter++;
+			if(stop_time_counter >= 0)
+			{
+				is_motor_working = 0;
+				is_stop = 0;
+				stop_time_counter = 0;
+			}
 		}
+
+	}
 	else
+	{
+		is_motor_working = 1;
+
+	}
+	if(is_motor_working)
 	{
 		uint8_t step;
 		if(direction == DIR_CW)
@@ -47,7 +50,6 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		}
 		stepMotor(step);
 		i++;
-	}
 	}
 
 

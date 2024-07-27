@@ -106,13 +106,13 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	// motor working?
 	if (queued_floor && !is_door_open)
 	{
-		is_motor_working = 1;
+
 		is_stop = 0;
 	}
 
 	else // (!queued_floor || is_door_open)
 	{
-		is_motor_working = 0;
+
 		is_stop = 1;
 	}
 
