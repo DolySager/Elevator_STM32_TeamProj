@@ -2,11 +2,70 @@
 #include "stepper.h"
 
 
-uint8_t currentfloor = 0;
-
 extern uint8_t is_motor_working;
 extern uint8_t direction;	// DIR_CW(high), DIR_CCW (low)
+uint8_t is_door_open = 0;	// 0: door closed, 1: door opened
 
+#define FLOOR_1F 0b1
+#define FLOOR_2F 0b10
+#define FLOOR_3F 0b100
+#define FLOOR_4F 0b1000
+#define FLOOR_5F 0b10000
+#define FLOOR_6F 0b100000
+#define FLOOR_7F 0b1000000
+#define FLOOR_8F 0b10000000
+
+// 버전 2: 외부 인터럽트 핀별 작동 분리 및 층 레지스터 일반화 코드 
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+	// 각 비트가 층을 상징하는 변수 (예: 1층 = 0번 비트)
+	static uint8_t queued_floor = 0;		// 목적지 층 대기열
+	static uint8_t current_floor = 0;		// 현재 엘레베이터 위치
+
+	// 버튼 처리
+	if (GPIO_Pin == button_1f_Pin) queued_floor |= FLOOR_1F;
+	else if (GPIO_Pin == button_2f_Pin) queued_floor |= FLOOR_2F;
+	else if (GPIO_Pin == button_3f_Pin) queued_floor |= FLOOR_3F;
+
+	// 포토인터럽트 처리
+	else if (HAL_GPIO_ReadPin(photoint_1f_GPIO_Port, photoint_1f_Pin)) current_floor = FLOOR_1F;
+	else if (HAL_GPIO_ReadPin(photoint_2f_GPIO_Port, photoint_2f_Pin)) current_floor = FLOOR_2F;
+	else if (HAL_GPIO_ReadPin(photoint_3f_GPIO_Port, photoint_3f_Pin)) current_floor = FLOOR_3F;
+
+	// 현재층 FND 출력 갱신
+	uint8_t current_floor_num = 0;
+	uint8_t temp_current_floor = current_floor;
+	while (temp_current_floor)	// 대기열의 현재층 위치 비트를 숫자로 변환
+	{
+		temp_current_floor = temp_current_floor >> 1;
+		current_floor_num++;
+	}
+	FND_DisplayNumber(current_floor_num);
+
+	// 만약 현재층이 대기열에 있다면...
+	if (queued_floor & current_floor)
+	{
+		queued_floor &= ~current_floor;
+		is_door_open = 1;
+		Play_Buzzer_Sound(current_floor_num);
+	}
+
+	// 스텝 모터 동작 설정
+	if (queued_floor && !is_door_open)
+		is_motor_working = 1;
+	else // (!queued_floor || is_door_open)
+		is_motor_working = 0;
+
+	// 스텝 모터 방향 설정
+	int8_t temp_floor_queue;
+	if (direction == DIR_CW) temp_floor_queue = (queued_floor / current_floor);	// possibility that result may be 1 if queued_floor equals current floor,  but the possibility is removed above when queued_floor &= ~current_floor
+	else temp_floor_queue = (queued_floor % current_floor);
+	// if there is nothing above/below current floor, switch direction
+	if (temp_floor_queue == 0) direction = !direction;
+}
+
+/*
+uint8_t currentfloor = 0;
 void updateCurrentFloor() {
     if (HAL_GPIO_ReadPin(photoint_1f_GPIO_Port, photoint_1f_Pin)) {
         currentfloor = 1; // 현재 1층
@@ -17,6 +76,7 @@ void updateCurrentFloor() {
     }
     FND_DisplayNumber(currentfloor);
 }
+*/
 
 /*
 // 버전1: 작동 확인된 코드
@@ -62,60 +122,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 }
 */
 
-#define FLOOR_MAX FLOOR_3F
 
-#define FLOOR_1F 0b1
-#define FLOOR_2F 0b10
-#define FLOOR_3F 0b100
-#define FLOOR_4F 0b1000
-#define FLOOR_5F 0b10000
-#define FLOOR_6F 0b100000
-
-uint8_t is_door_open = 0;	// 0: door closed, 1: door opened
-
-// 버전 2: 외부 인터럽트 핀별 작동 분리 및 층 레지스터 일반화 코드 
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-{
-	updateCurrentFloor();
-	// 각 비트가 층을 상징하는 변수 (예: 1층 = 0번 비트)
-	static uint8_t queued_floor = 0;		// 목적지 층 대기열
-	static uint8_t current_floor = 0;		// 현재 엘레베이터 위치
-
-	////////////////////////////////
-	// 외부 인터럽트 핀별 각개 처리 //
-	////////////////////////////////
-
-	// 버튼 처리
-	if (GPIO_Pin == button_1f_Pin) queued_floor |= FLOOR_1F;
-	else if (GPIO_Pin == button_2f_Pin) queued_floor |= FLOOR_2F;
-	else if (GPIO_Pin == button_3f_Pin) queued_floor |= FLOOR_3F;
-
-	// 포토인터럽트 처리
-	else if (HAL_GPIO_ReadPin(photoint_1f_GPIO_Port, photoint_1f_Pin)) current_floor = FLOOR_1F;
-	else if (HAL_GPIO_ReadPin(photoint_2f_GPIO_Port, photoint_2f_Pin)) current_floor = FLOOR_2F;
-	else if (HAL_GPIO_ReadPin(photoint_3f_GPIO_Port, photoint_3f_Pin)) current_floor = FLOOR_3F;
-
-	// 만약 현재층이 대기열에 있다면...
-	if (queued_floor & current_floor)
-	{
-		queued_floor &= ~current_floor;
-		is_door_open = 1;
-		Play_Buzzer_Sound(currentfloor);
-	}
-
-	// motor working?
-	if (queued_floor && !is_door_open)
-		is_motor_working = 1;
-	else // (!queued_floor || is_door_open)
-		is_motor_working = 0;
-
-	// motor direction
-	int8_t temp_floor;
-	if (direction == DIR_CW) temp_floor = (queued_floor / current_floor);	// possibility that result may be 1 if queued_floor equals current floor,  but the possibility is removed above when queued_floor &= ~current_floor
-	else temp_floor = (queued_floor % current_floor);
-	// if there is nothing above/below current floor, switch direction
-	if (temp_floor == 0) direction = !direction;
-}
 
 /*
 // great effor of works of Mr. Q

@@ -1,8 +1,11 @@
 #include "buzzer.h"
 
+#define BUZZER_END_TIME 2000	// 2000번 타이머10 카운트 후 멈춤 (현재 설정: 2000ms)
+
 static TIM_HandleTypeDef *buzzer_htim;
 static uint32_t buzzer_channel;
-static uint32_t buzzer_end_time = 0;
+static uint32_t buzzer_time_counter = 0;
+
 
 void Buzzer_Init(TIM_HandleTypeDef *htim, uint32_t channel)
 {
@@ -43,15 +46,18 @@ void Play_Buzzer_Sound(uint8_t currentfloor)	// 각층마다 주파수다르게 
 		default:
 			return;
 	}
+	buzzer_time_counter = 0;	// Buzzer_update() 에도 있지만 중복 확인용으로 넣음
 	Buzzer_Start();
-	buzzer_end_time = HAL_GetTick() + 2000; // 2초 후에 부저를 멈추도록 설정
 }
 
 void Buzzer_Update(void)
 {
-	if (buzzer_end_time != 0 && HAL_GetTick() >= buzzer_end_time)
+	if (buzzer_time_counter >= BUZZER_END_TIME)
 	{
 		Buzzer_Stop();
-		buzzer_end_time = 0;
+		buzzer_time_counter = 0;
+	}
+	else{
+		buzzer_time_counter++;
 	}
 }
