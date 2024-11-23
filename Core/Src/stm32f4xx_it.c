@@ -242,7 +242,6 @@ void EXTI4_IRQHandler(void)
 }
 
 /**
-
   * @brief This function handles TIM1 update interrupt and TIM10 global interrupt.
   */
 void TIM1_UP_TIM10_IRQHandler(void)
@@ -257,7 +256,6 @@ void TIM1_UP_TIM10_IRQHandler(void)
 }
 
 /**
-
   * @brief This function handles USART2 global interrupt.
   */
 void USART2_IRQHandler(void)
